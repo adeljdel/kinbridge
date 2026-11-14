@@ -1,3 +1,4 @@
+/** Pharmacy price finder: budget-based recommendation, schematic map and ranked list. All pharmacies are fictional. */
 import { useState } from 'react'
 import { FREE_MED_LIMIT, PLUS_MED_LIMIT, locLabel } from '../data.js'
 import { money, pharmacyResults, useStore, useToast } from '../store.jsx'
@@ -16,7 +17,12 @@ function PharmacyMap({ rows, selectedId, onSelect, home }) {
   const rings = [maxR / 3, (2 * maxR) / 3, maxR]
   const best = rows.find((r) => r.within)
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="w-full rounded-2xl border border-silver-200 bg-[#ECEBE0]" role="group" aria-label={`Schematic map of pharmacies near ${home}. Not to scale.`}>
+    <svg
+      viewBox={`0 0 ${W} ${H}`}
+      className="w-full rounded-2xl border border-silver-200 bg-[#ECEBE0]"
+      role="group"
+      aria-label={`Schematic map of pharmacies near ${home}. Not to scale.`}
+    >
       {/* decorative streets */}
       <g stroke="#ffffff" strokeWidth="10" strokeLinecap="round" opacity=".9">
         <path d="M0 110 L640 150" />
@@ -116,15 +122,40 @@ function MedsEditor({ limit }) {
     <div>
       {meds.length === 0 ? (
         <EmptyState icon="💊" title="No medications or supplies yet">
-          Add what your parent buys at the pharmacy each month and what you pay today. Use general labels — no need for exact doses or diagnoses.
+          Add what your parent buys at the pharmacy each month and what you pay today. Use general labels — no need for exact doses or
+          diagnoses.
         </EmptyState>
       ) : (
         <ul className="space-y-2">
           {meds.map((m) => (
             <li key={m.id} className="grid grid-cols-[minmax(0,1fr)_6.5rem_auto] items-end gap-2 rounded-xl border border-silver-200 p-2">
-              <Field label="Name">{(p) => <input {...p} className={cx(inputCls, 'min-h-11')} value={m.name} maxLength={60} onChange={(e) => dispatch({ type: 'med-update', id: m.id, patch: { name: e.target.value } })} />}</Field>
-              <Field label="$ / month">{(p) => <MoneyInput {...p} className="min-h-11" value={m.monthly} onChange={(e) => dispatch({ type: 'med-update', id: m.id, patch: { monthly: e.target.value } })} />}</Field>
-              <button type="button" className="mb-0.5 min-h-11 min-w-11 rounded-lg text-muted hover:bg-red-50 hover:text-red-700" aria-label={`Remove ${m.name}`} onClick={() => dispatch({ type: 'med-delete', id: m.id })}>
+              <Field label="Name">
+                {(p) => (
+                  <input
+                    {...p}
+                    className={cx(inputCls, 'min-h-11')}
+                    value={m.name}
+                    maxLength={60}
+                    onChange={(e) => dispatch({ type: 'med-update', id: m.id, patch: { name: e.target.value } })}
+                  />
+                )}
+              </Field>
+              <Field label="$ / month">
+                {(p) => (
+                  <MoneyInput
+                    {...p}
+                    className="min-h-11"
+                    value={m.monthly}
+                    onChange={(e) => dispatch({ type: 'med-update', id: m.id, patch: { monthly: e.target.value } })}
+                  />
+                )}
+              </Field>
+              <button
+                type="button"
+                className="mb-0.5 min-h-11 min-w-11 rounded-lg text-muted hover:bg-red-50 hover:text-red-700"
+                aria-label={`Remove ${m.name}`}
+                onClick={() => dispatch({ type: 'med-delete', id: m.id })}
+              >
                 🗑️
               </button>
             </li>
@@ -134,7 +165,16 @@ function MedsEditor({ limit }) {
       <form onSubmit={add} noValidate className="mt-3 rounded-xl bg-silver-50 p-3">
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2">
           <Field label="Add item" error={err.name} className="col-span-2">
-            {(p) => <input {...p} className={inputCls} value={name} maxLength={60} placeholder="e.g. Maintenance medication C" onChange={(e) => setName(e.target.value)} />}
+            {(p) => (
+              <input
+                {...p}
+                className={inputCls}
+                value={name}
+                maxLength={60}
+                placeholder="e.g. Maintenance medication C"
+                onChange={(e) => setName(e.target.value)}
+              />
+            )}
           </Field>
           <Field label="You pay today ($/mo)" error={err.price}>
             {(p) => <MoneyInput {...p} value={price} onChange={(e) => setPrice(e.target.value)} />}
@@ -185,7 +225,18 @@ function AddPharmacy() {
         {(p) => <MoneyInput {...p} value={f.quote} onChange={(e) => setF({ ...f, quote: e.target.value })} />}
       </Field>
       <Field label="Miles away" error={err.distance}>
-        {(p) => <input {...p} type="number" inputMode="decimal" min="0" step="0.1" className={inputCls} value={f.distance} onChange={(e) => setF({ ...f, distance: e.target.value })} />}
+        {(p) => (
+          <input
+            {...p}
+            type="number"
+            inputMode="decimal"
+            min="0"
+            step="0.1"
+            className={inputCls}
+            value={f.distance}
+            onChange={(e) => setF({ ...f, distance: e.target.value })}
+          />
+        )}
       </Field>
       <Button type="submit" variant="secondary">
         + Add
@@ -214,8 +265,9 @@ export default function Pharmacy() {
         subtitle="Set a monthly pharmacy budget, enter what you pay today, and compare nearby pharmacies. We highlight the lowest price that fits your budget."
       />
       <Notice tone="warn" className="mb-6" title="Estimates, not quotes">
-        {demo ? 'Pharmacies, distances and price levels here are fictional demo data. ' : ''}Prices are estimated from what you enter. Call the pharmacy, ask for a written monthly total, and type it in as “your quote” — your quote always replaces our estimate. KinBridge doesn’t recommend
-        medications or doses; ask the prescriber or pharmacist about those.
+        {demo ? 'Pharmacies, distances and price levels here are fictional demo data. ' : ''}Prices are estimated from what you enter. Call
+        the pharmacy, ask for a written monthly total, and type it in as “your quote” — your quote always replaces our estimate. KinBridge
+        doesn’t recommend medications or doses; ask the prescriber or pharmacist about those.
       </Notice>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)]">
@@ -224,9 +276,22 @@ export default function Pharmacy() {
             <h2 className="mb-3 text-lg font-bold">1. Where &amp; how much</h2>
             <LocationPicker value={state.profile} onChange={(loc) => dispatch({ type: 'profile', patch: loc })} />
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              <Field label="Monthly pharmacy budget">{(p) => <MoneyInput {...p} value={ph.budget} onChange={(e) => set({ budget: e.target.value })} />}</Field>
+              <Field label="Monthly pharmacy budget">
+                {(p) => <MoneyInput {...p} value={ph.budget} onChange={(e) => set({ budget: e.target.value })} />}
+              </Field>
               <Field label={`Max distance: ${ph.maxMiles} mi`}>
-                {(p) => <input {...p} type="range" min="1" max="12" step="1" className="h-12 w-full accent-brand-700" value={ph.maxMiles} onChange={(e) => set({ maxMiles: Number(e.target.value) })} />}
+                {(p) => (
+                  <input
+                    {...p}
+                    type="range"
+                    min="1"
+                    max="12"
+                    step="1"
+                    className="h-12 w-full accent-brand-700"
+                    value={ph.maxMiles}
+                    onChange={(e) => set({ maxMiles: Number(e.target.value) })}
+                  />
+                )}
               </Field>
             </div>
           </Card>
@@ -248,7 +313,12 @@ export default function Pharmacy() {
                     <span>
                       {c.name} · {money(Number(c.quote))} · {c.distance} mi
                     </span>
-                    <button type="button" className="min-h-10 min-w-10 text-muted hover:text-red-700" aria-label={`Remove ${c.name}`} onClick={() => dispatch({ type: 'pharm-delete', id: c.id })}>
+                    <button
+                      type="button"
+                      className="min-h-10 min-w-10 text-muted hover:text-red-700"
+                      aria-label={`Remove ${c.name}`}
+                      onClick={() => dispatch({ type: 'pharm-delete', id: c.id })}
+                    >
                       ✕
                     </button>
                   </li>
@@ -274,11 +344,18 @@ export default function Pharmacy() {
                     </p>
                     <p className="mt-1">
                       That’s {money(res.budget - res.best.price)} under your budget, {res.best.distance} miles away ({res.best.source}).
-                      {res.vsCurrent > 0.5 && <> Compared with what you pay today ({money(res.current)}), that’s an estimated <strong>{money(res.vsCurrent)}/month</strong> lower if the estimate holds.</>}
+                      {res.vsCurrent > 0.5 && (
+                        <>
+                          {' '}
+                          Compared with what you pay today ({money(res.current)}), that’s an estimated{' '}
+                          <strong>{money(res.vsCurrent)}/month</strong> lower if the estimate holds.
+                        </>
+                      )}
                     </p>
                     {res.closestWithin && (
                       <p className="mt-2 text-sm">
-                        Prefer a shorter trip? <strong>{res.closestWithin.name}</strong> is also within budget at {money(res.closestWithin.price)} and only {res.closestWithin.distance} mi away.
+                        Prefer a shorter trip? <strong>{res.closestWithin.name}</strong> is also within budget at{' '}
+                        {money(res.closestWithin.price)} and only {res.closestWithin.distance} mi away.
                       </p>
                     )}
                     <p className="mt-2 text-sm text-muted">
@@ -289,13 +366,21 @@ export default function Pharmacy() {
                   <>
                     <p className="mt-1 text-xl font-bold">No pharmacy in range fits {money(res.budget)}</p>
                     <p className="mt-1">
-                      The lowest is <strong>{res.cheapest.name}</strong> at about {money(res.cheapest.price)}/month — <strong>{money(res.gap)} over</strong> your budget.
+                      The lowest is <strong>{res.cheapest.name}</strong> at about {money(res.cheapest.price)}/month —{' '}
+                      <strong>{money(res.gap)} over</strong> your budget.
                     </p>
                     <ul className="mt-2 list-disc space-y-1 pl-5 text-sm">
                       <li>Raise the max distance or your budget to see how the result changes.</li>
-                      <li>Ask each pharmacy about their lowest-cost options and whether 90-day fills are available (confirm anything medical with the prescriber or pharmacist).</li>
                       <li>
-                        A free SHIP counselor can review plan options — see <a className="font-semibold underline" href="#/resources">Resources</a>.
+                        Ask each pharmacy about their lowest-cost options and whether 90-day fills are available (confirm anything medical
+                        with the prescriber or pharmacist).
+                      </li>
+                      <li>
+                        A free SHIP counselor can review plan options — see{' '}
+                        <a className="font-semibold underline" href="#/resources">
+                          Resources
+                        </a>
+                        .
                       </li>
                     </ul>
                   </>
@@ -338,13 +423,22 @@ export default function Pharmacy() {
                   {!sel.custom && (
                     <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
                       <Field label="Got a real quote? Enter the monthly total" hint="Replaces our estimate for this pharmacy.">
-                        {(p) => <MoneyInput {...p} value={ph.quotes[sel.id] ?? ''} placeholder={String(Math.round(sel.est))} onChange={(e) => dispatch({ type: 'quote', id: sel.id, value: e.target.value })} />}
+                        {(p) => (
+                          <MoneyInput
+                            {...p}
+                            value={ph.quotes[sel.id] ?? ''}
+                            placeholder={String(Math.round(sel.est))}
+                            onChange={(e) => dispatch({ type: 'quote', id: sel.id, value: e.target.value })}
+                          />
+                        )}
                       </Field>
                       <Button
                         variant="secondary"
                         onClick={() => {
                           dispatch({ type: 'task-add', task: { title: `Call ${sel.name} for a written monthly price quote` } })
-                          toast('Follow-up task added.', { action: { label: 'View', onClick: () => (window.location.hash = '/dashboard') } })
+                          toast('Follow-up task added.', {
+                            action: { label: 'View', onClick: () => (window.location.hash = '/dashboard') },
+                          })
                         }}
                       >
                         + Follow-up task
@@ -363,9 +457,19 @@ export default function Pharmacy() {
                         type="button"
                         onClick={() => setSelected(r.id)}
                         aria-pressed={sel?.id === r.id}
-                        className={cx('flex min-h-14 w-full items-center gap-3 rounded-xl border p-3 text-left hover:bg-brand-50', sel?.id === r.id ? 'border-brand-500 bg-brand-50' : 'border-silver-200')}
+                        className={cx(
+                          'flex min-h-14 w-full items-center gap-3 rounded-xl border p-3 text-left hover:bg-brand-50',
+                          sel?.id === r.id ? 'border-brand-500 bg-brand-50' : 'border-silver-200'
+                        )}
                       >
-                        <span className={cx('flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white', r.within ? 'bg-emerald-700' : 'bg-amber-700')}>{i + 1}</span>
+                        <span
+                          className={cx(
+                            'flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white',
+                            r.within ? 'bg-emerald-700' : 'bg-amber-700'
+                          )}
+                        >
+                          {i + 1}
+                        </span>
                         <span className="min-w-0 flex-1">
                           <span className="block font-semibold">
                             {r.name} {res.best?.id === r.id && <span aria-label="best pick">⭐</span>}
@@ -376,13 +480,19 @@ export default function Pharmacy() {
                         </span>
                         <span className="text-right">
                           <span className="block text-lg font-bold">{money(r.price)}</span>
-                          <span className={cx('block text-xs font-semibold', r.within ? 'text-emerald-800' : 'text-amber-800')}>{r.within ? `${money(res.budget - r.price)} under` : `${money(r.price - res.budget)} over`}</span>
+                          <span className={cx('block text-xs font-semibold', r.within ? 'text-emerald-800' : 'text-amber-800')}>
+                            {r.within ? `${money(res.budget - r.price)} under` : `${money(r.price - res.budget)} over`}
+                          </span>
                         </span>
                       </button>
                     </li>
                   ))}
                 </ol>
-                {res.hiddenByDistance > 0 && <p className="mt-2 text-sm text-muted">{res.hiddenByDistance} more beyond {ph.maxMiles} miles — raise the distance to see them.</p>}
+                {res.hiddenByDistance > 0 && (
+                  <p className="mt-2 text-sm text-muted">
+                    {res.hiddenByDistance} more beyond {ph.maxMiles} miles — raise the distance to see them.
+                  </p>
+                )}
               </Card>
             </>
           )}

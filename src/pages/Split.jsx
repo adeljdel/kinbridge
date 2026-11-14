@@ -1,3 +1,4 @@
+/** Family Split (Plus): shares, monthly contributions and settle-up. */
 import { computeSplit, monthLabel, monthKey, money, totals, useStore, useToast } from '../store.jsx'
 import { Button, Card, DemoTag, EmptyState, Field, MoneyInput, Notice, PageHeader, cx, inputCls } from '../ui.jsx'
 import { PlusGate } from '../extras.jsx'
@@ -8,8 +9,21 @@ export default function Split() {
   if (!isPlus) {
     return (
       <div className="animate-fade-in">
-        <PageHeader eyebrow={state.mode === 'demo' && <DemoTag />} title="Family Split" subtitle="Share care costs fairly with your siblings and see exactly who owes whom." />
-        <PlusGate icon="👨‍👩‍👧" title="Family Split is a Plus feature" bullets={['Set each person’s share (or split equally)', 'Track what everyone paid this month', 'Automatic settle-up: who sends how much to whom', 'Printable family summary to share']}>
+        <PageHeader
+          eyebrow={state.mode === 'demo' && <DemoTag />}
+          title="Family Split"
+          subtitle="Share care costs fairly with your siblings and see exactly who owes whom."
+        />
+        <PlusGate
+          icon="👨‍👩‍👧"
+          title="Family Split is a Plus feature"
+          bullets={[
+            'Set each person’s share (or split equally)',
+            'Track what everyone paid this month',
+            'Automatic settle-up: who sends how much to whom',
+            'Printable family summary to share',
+          ]}
+        >
           Money is the number-one source of sibling friction in caregiving. Plus turns it into a simple monthly routine.
         </PlusGate>
       </div>
@@ -26,12 +40,18 @@ export default function Split() {
     const n = people.length
     const base = Math.floor((100 / n) * 100) / 100
     const rest = Math.round((100 - base * n) * 100) / 100
-    dispatch({ type: 'split-set-people', people: people.map((p, i) => ({ ...p, pct: i === 0 ? Math.round((base + rest) * 100) / 100 : base })) })
+    dispatch({
+      type: 'split-set-people',
+      people: people.map((p, i) => ({ ...p, pct: i === 0 ? Math.round((base + rest) * 100) / 100 : base })),
+    })
     toast('Split equally.')
   }
   const normalize = () => {
     if (calc.pctSum <= 0) return equal()
-    dispatch({ type: 'split-set-people', people: people.map((p) => ({ ...p, pct: Math.round(((Number(p.pct) || 0) / calc.pctSum) * 10000) / 100 })) })
+    dispatch({
+      type: 'split-set-people',
+      people: people.map((p) => ({ ...p, pct: Math.round(((Number(p.pct) || 0) / calc.pctSum) * 10000) / 100 })),
+    })
     toast('Shares adjusted to total 100%.')
   }
   const pctOk = Math.abs(calc.pctSum - 100) < 0.01
@@ -43,7 +63,10 @@ export default function Split() {
         title="Family Split"
         subtitle={`Splitting ${money(monthlySpending)} of estimated monthly care spending. Change expenses to update this automatically.`}
         actions={
-          <a href="#/summary" className="inline-flex min-h-12 items-center rounded-xl border border-silver-300 bg-white px-4 font-semibold text-brand-800 hover:bg-brand-50">
+          <a
+            href="#/summary"
+            className="inline-flex min-h-12 items-center rounded-xl border border-silver-300 bg-white px-4 font-semibold text-brand-800 hover:bg-brand-50"
+          >
             🖨️ Printable summary
           </a>
         }
@@ -68,7 +91,11 @@ export default function Split() {
               <Button size="sm" variant="secondary" onClick={equal}>
                 Split equally
               </Button>
-              <Button size="sm" variant="secondary" onClick={() => (people.length < 6 ? dispatch({ type: 'person-add' }) : toast('Up to 6 people.', { tone: 'danger' }))}>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => (people.length < 6 ? dispatch({ type: 'person-add' }) : toast('Up to 6 people.', { tone: 'danger' }))}
+              >
                 + Add person
               </Button>
             </div>
@@ -80,11 +107,40 @@ export default function Split() {
                 <li key={p.id} className="rounded-xl border border-silver-200 p-3">
                   <div className="grid grid-cols-2 gap-2 sm:grid-cols-[1.4fr_5.5rem_7rem_auto] sm:items-end">
                     <Field label="First name" className="col-span-2 sm:col-span-1" error={!p.name.trim() ? 'Add a name.' : ''}>
-                      {(f) => <input {...f} className={inputCls} value={p.name} maxLength={40} onChange={(e) => upd(p.id, { name: e.target.value })} />}
+                      {(f) => (
+                        <input
+                          {...f}
+                          className={inputCls}
+                          value={p.name}
+                          maxLength={40}
+                          onChange={(e) => upd(p.id, { name: e.target.value })}
+                        />
+                      )}
                     </Field>
-                    <Field label="Share %">{(f) => <input {...f} type="number" inputMode="decimal" min="0" max="100" className={inputCls} value={p.pct} onChange={(e) => upd(p.id, { pct: e.target.value })} />}</Field>
-                    <Field label="Paid this month">{(f) => <MoneyInput {...f} value={p.paid} onChange={(e) => upd(p.id, { paid: e.target.value })} />}</Field>
-                    <button type="button" disabled={people.length <= 1} className="min-h-12 rounded-lg px-2 text-muted hover:bg-red-50 hover:text-red-700 disabled:opacity-30" aria-label={`Remove ${p.name || 'person'}`} onClick={() => dispatch({ type: 'person-delete', id: p.id })}>
+                    <Field label="Share %">
+                      {(f) => (
+                        <input
+                          {...f}
+                          type="number"
+                          inputMode="decimal"
+                          min="0"
+                          max="100"
+                          className={inputCls}
+                          value={p.pct}
+                          onChange={(e) => upd(p.id, { pct: e.target.value })}
+                        />
+                      )}
+                    </Field>
+                    <Field label="Paid this month">
+                      {(f) => <MoneyInput {...f} value={p.paid} onChange={(e) => upd(p.id, { paid: e.target.value })} />}
+                    </Field>
+                    <button
+                      type="button"
+                      disabled={people.length <= 1}
+                      className="min-h-12 rounded-lg px-2 text-muted hover:bg-red-50 hover:text-red-700 disabled:opacity-30"
+                      aria-label={`Remove ${p.name || 'person'}`}
+                      onClick={() => dispatch({ type: 'person-delete', id: p.id })}
+                    >
                       🗑️
                     </button>
                   </div>
@@ -130,12 +186,17 @@ export default function Split() {
               <ul className="mt-3 space-y-2">
                 {calc.transfers.map((t, i) => (
                   <li key={i} className="rounded-xl bg-brand-50 p-3">
-                    <strong>{t.from || 'Someone'}</strong> sends <strong>{money(t.amt, { cents: true })}</strong> to <strong>{t.to || 'someone'}</strong>
+                    <strong>{t.from || 'Someone'}</strong> sends <strong>{money(t.amt, { cents: true })}</strong> to{' '}
+                    <strong>{t.to || 'someone'}</strong>
                   </li>
                 ))}
               </ul>
             )}
-            {calc.totalPaid > monthlySpending + 0.5 && monthlySpending > 0 && <p className="mt-3 text-sm text-accent-600">Contributions exceed estimated spending by {money(calc.totalPaid - monthlySpending)}.</p>}
+            {calc.totalPaid > monthlySpending + 0.5 && monthlySpending > 0 && (
+              <p className="mt-3 text-sm text-accent-600">
+                Contributions exceed estimated spending by {money(calc.totalPaid - monthlySpending)}.
+              </p>
+            )}
           </Card>
         </div>
       </div>

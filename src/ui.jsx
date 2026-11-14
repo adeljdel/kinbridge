@@ -1,10 +1,12 @@
+/** Small shared UI building blocks (buttons, cards, form fields, modal, toasts, logo). */
 import { useEffect, useId, useRef } from 'react'
 import { useToast } from './store.jsx'
 
 export const cx = (...c) => c.filter(Boolean).join(' ')
 
 export function Button({ variant = 'primary', size = 'md', className, children, ...props }) {
-  const base = 'inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed select-none'
+  const base =
+    'inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed select-none'
   const sizes = { sm: 'min-h-10 px-3 text-sm', md: 'min-h-12 px-4 text-base', lg: 'min-h-14 px-6 text-lg' }
   const variants = {
     primary: 'bg-brand-700 text-white hover:bg-brand-800 active:bg-brand-900 shadow-sm',
@@ -36,11 +38,25 @@ export function Badge({ tone = 'neutral', children, className }) {
     danger: 'bg-red-50 text-red-800 border-red-200',
     demo: 'bg-violet-50 text-violet-800 border-violet-200',
   }
-  return <span className={cx('inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap', tones[tone], className)}>{children}</span>
+  return (
+    <span
+      className={cx(
+        'inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap',
+        tones[tone],
+        className
+      )}
+    >
+      {children}
+    </span>
+  )
 }
 
 export function DemoTag({ className }) {
-  return <Badge tone="demo" className={className}>Fictional demo data</Badge>
+  return (
+    <Badge tone="demo" className={className}>
+      Fictional demo data
+    </Badge>
+  )
 }
 
 export function Field({ label, hint, error, children, id: idProp, className }) {
@@ -51,7 +67,9 @@ export function Field({ label, hint, error, children, id: idProp, className }) {
       <label htmlFor={id} className="text-sm font-semibold text-ink">
         {label}
       </label>
-      {typeof children === 'function' ? children({ id, 'aria-invalid': !!error, 'aria-describedby': error ? `${id}-err` : hint ? `${id}-hint` : undefined }) : children}
+      {typeof children === 'function'
+        ? children({ id, 'aria-invalid': !!error, 'aria-describedby': error ? `${id}-err` : hint ? `${id}-hint` : undefined })
+        : children}
       {hint && !error && (
         <p id={`${id}-hint`} className="text-sm text-muted">
           {hint}
@@ -73,7 +91,16 @@ export function MoneyInput({ value, onChange, className, ...props }) {
   return (
     <div className="relative">
       <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-muted">$</span>
-      <input type="number" inputMode="decimal" min="0" step="any" className={cx(inputCls, 'pl-7', className)} value={value} onChange={onChange} {...props} />
+      <input
+        type="number"
+        inputMode="decimal"
+        min="0"
+        step="any"
+        className={cx(inputCls, 'pl-7', className)}
+        value={value}
+        onChange={onChange}
+        {...props}
+      />
     </div>
   )
 }
@@ -90,7 +117,9 @@ export function Toggle({ checked, onChange, label, description }) {
         onClick={() => onChange(!checked)}
         className={cx('relative mt-0.5 h-8 w-14 shrink-0 rounded-full transition-colors', checked ? 'bg-brand-700' : 'bg-silver-300')}
       >
-        <span className={cx('absolute top-1 left-1 h-6 w-6 rounded-full bg-white shadow transition-transform', checked && 'translate-x-6')} />
+        <span
+          className={cx('absolute top-1 left-1 h-6 w-6 rounded-full bg-white shadow transition-transform', checked && 'translate-x-6')}
+        />
       </button>
       <label htmlFor={id} className="cursor-pointer">
         <span className="block font-semibold">{label}</span>
@@ -152,13 +181,21 @@ export function Notice({ tone = 'info', title, children, onDismiss, className })
     demo: 'bg-violet-50 border-violet-200 text-violet-900',
   }
   return (
-    <div className={cx('flex items-start gap-3 rounded-xl border p-4 text-sm', tones[tone], className)} role={tone === 'danger' ? 'alert' : 'status'}>
+    <div
+      className={cx('flex items-start gap-3 rounded-xl border p-4 text-sm', tones[tone], className)}
+      role={tone === 'danger' ? 'alert' : 'status'}
+    >
       <div className="flex-1">
         {title && <p className="font-semibold">{title}</p>}
         <div className={title ? 'mt-0.5' : ''}>{children}</div>
       </div>
       {onDismiss && (
-        <button type="button" onClick={onDismiss} className="-m-2 min-h-10 min-w-10 rounded-lg p-2 font-bold opacity-70 hover:opacity-100" aria-label="Dismiss">
+        <button
+          type="button"
+          onClick={onDismiss}
+          className="-m-2 min-h-10 min-w-10 rounded-lg p-2 font-bold opacity-70 hover:opacity-100"
+          aria-label="Dismiss"
+        >
           ✕
         </button>
       )}
@@ -183,17 +220,36 @@ export function Modal({ open, onClose, title, children, footer, wide }) {
   }, [open, onClose])
   if (!open) return null
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-label={title}>
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-label={title}
+    >
       <div className="absolute inset-0 bg-ink/50" onClick={onClose} />
-      <div ref={ref} className={cx('animate-fade-in relative flex max-h-[92vh] w-full flex-col rounded-t-2xl bg-white shadow-xl sm:rounded-2xl', wide ? 'sm:max-w-2xl' : 'sm:max-w-lg')}>
+      <div
+        ref={ref}
+        className={cx(
+          'animate-fade-in relative flex max-h-[92vh] w-full flex-col rounded-t-2xl bg-white shadow-xl sm:rounded-2xl',
+          wide ? 'sm:max-w-2xl' : 'sm:max-w-lg'
+        )}
+      >
         <div className="flex items-center justify-between border-b border-silver-200 px-5 py-4">
           <h2 className="text-lg font-bold">{title}</h2>
-          <button data-close type="button" onClick={onClose} className="min-h-11 min-w-11 rounded-lg text-xl text-muted hover:bg-silver-100" aria-label="Close dialog">
+          <button
+            data-close
+            type="button"
+            onClick={onClose}
+            className="min-h-11 min-w-11 rounded-lg text-xl text-muted hover:bg-silver-100"
+            aria-label="Close dialog"
+          >
             ✕
           </button>
         </div>
         <div className="overflow-y-auto px-5 py-4">{children}</div>
-        {footer && <div className="flex flex-col-reverse gap-2 border-t border-silver-200 px-5 py-4 sm:flex-row sm:justify-end">{footer}</div>}
+        {footer && (
+          <div className="flex flex-col-reverse gap-2 border-t border-silver-200 px-5 py-4 sm:flex-row sm:justify-end">{footer}</div>
+        )}
       </div>
     </div>
   )
@@ -211,7 +267,10 @@ export function Spinner({ label = 'Loading' }) {
 export function Toasts() {
   const { toasts, dismissToast } = useToast()
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-20 z-[60] flex flex-col items-center gap-2 px-4 md:bottom-6" aria-live="polite">
+    <div
+      className="pointer-events-none fixed inset-x-0 bottom-20 z-[60] flex flex-col items-center gap-2 px-4 md:bottom-6"
+      aria-live="polite"
+    >
       {toasts.map((t) => (
         <div
           key={t.id}
@@ -234,7 +293,12 @@ export function Toasts() {
               {t.action.label}
             </button>
           )}
-          <button type="button" className="min-h-10 min-w-10 rounded-lg opacity-70 hover:opacity-100" onClick={() => dismissToast(t.id)} aria-label="Dismiss notification">
+          <button
+            type="button"
+            className="min-h-10 min-w-10 rounded-lg opacity-70 hover:opacity-100"
+            onClick={() => dismissToast(t.id)}
+            aria-label="Dismiss notification"
+          >
             ✕
           </button>
         </div>

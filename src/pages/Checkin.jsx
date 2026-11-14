@@ -1,3 +1,4 @@
+/** Monthly check-in: planned vs actual spending, streak, and history (history is Plus). */
 import { useState } from 'react'
 import { checkinStreak, money, monthKey, monthLabel, totals, useStore, useToast } from '../store.jsx'
 import { Badge, Button, Card, DemoTag, Field, MoneyInput, PageHeader, cx, inputCls } from '../ui.jsx'
@@ -13,7 +14,6 @@ export default function Checkin() {
   const [note, setNote] = useState(existing?.note ?? '')
   const [err, setErr] = useState('')
   const streak = checkinStreak(state.checkins)
-  const planned = existing?.planned ?? monthlySpending
   const a = Number(actual)
   const diff = actual === '' ? null : a - monthlySpending
 
@@ -22,7 +22,11 @@ export default function Checkin() {
     if (actual === '' || !Number.isFinite(a) || a < 0) return setErr('Enter what you actually spent this month so far.')
     if (a > 1000000) return setErr('That looks too large.')
     setErr('')
-    dispatch({ type: 'checkin', key, entry: { planned: Math.round(monthlySpending * 100) / 100, actual: a, note: note.trim(), at: Date.now() } })
+    dispatch({
+      type: 'checkin',
+      key,
+      entry: { planned: Math.round(monthlySpending * 100) / 100, actual: a, note: note.trim(), at: Date.now() },
+    })
     toast(existing ? 'Check-in updated.' : 'Check-in saved. See you next month!')
   }
 
@@ -31,7 +35,11 @@ export default function Checkin() {
 
   return (
     <div className="animate-fade-in">
-      <PageHeader eyebrow={state.mode === 'demo' && <DemoTag />} title="Monthly check-in" subtitle="Two minutes a month: compare what you planned with what you actually spent, and keep a record the whole family can trust." />
+      <PageHeader
+        eyebrow={state.mode === 'demo' && <DemoTag />}
+        title="Monthly check-in"
+        subtitle="Two minutes a month: compare what you planned with what you actually spent, and keep a record the whole family can trust."
+      />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,420px)_1fr]">
         <Card className="h-fit p-5">
@@ -50,7 +58,13 @@ export default function Checkin() {
               {(p) => <input {...p} className={inputCls} value={note} maxLength={140} onChange={(e) => setNote(e.target.value)} />}
             </Field>
             {diff !== null && Number.isFinite(diff) && (
-              <p className={cx('rounded-xl p-3 text-sm font-semibold', diff > 0.5 ? 'bg-amber-50 text-amber-900' : 'bg-emerald-50 text-emerald-900')} role="status">
+              <p
+                className={cx(
+                  'rounded-xl p-3 text-sm font-semibold',
+                  diff > 0.5 ? 'bg-amber-50 text-amber-900' : 'bg-emerald-50 text-emerald-900'
+                )}
+                role="status"
+              >
                 {Math.abs(diff) < 0.5 ? 'Right on plan.' : diff > 0 ? `${money(diff)} over your plan.` : `${money(-diff)} under your plan.`}
               </p>
             )}
@@ -90,7 +104,11 @@ export default function Checkin() {
                       <div className="mb-1 flex items-center justify-between text-sm">
                         <span className="font-semibold">{monthLabel(k)}</span>
                         <span className={cx('font-semibold', v.actual > v.planned + 0.5 ? 'text-amber-800' : 'text-emerald-800')}>
-                          {v.actual > v.planned + 0.5 ? `+${money(v.actual - v.planned)}` : v.actual < v.planned - 0.5 ? `−${money(v.planned - v.actual)}` : 'on plan'}
+                          {v.actual > v.planned + 0.5
+                            ? `+${money(v.actual - v.planned)}`
+                            : v.actual < v.planned - 0.5
+                              ? `−${money(v.planned - v.actual)}`
+                              : 'on plan'}
                         </span>
                       </div>
                       <div className="space-y-1" aria-label={`${monthLabel(k)}: planned ${money(v.planned)}, actual ${money(v.actual)}`}>
@@ -117,7 +135,15 @@ export default function Checkin() {
               {state.mode === 'demo' && <p className="mt-3 text-xs text-muted">Earlier months are fictional demo entries.</p>}
             </Card>
           ) : (
-            <PlusGate icon="📈" title="Unlock your check-in history" bullets={['See planned vs. actual for every month', 'Spot months that ran over and why', 'Keep a record for siblings and tax time']}>
+            <PlusGate
+              icon="📈"
+              title="Unlock your check-in history"
+              bullets={[
+                'See planned vs. actual for every month',
+                'Spot months that ran over and why',
+                'Keep a record for siblings and tax time',
+              ]}
+            >
               Free includes this month’s check-in and your streak. Plus keeps the full history.
             </PlusGate>
           )}

@@ -1,3 +1,4 @@
+/** Recurring expenses: any frequency is converted to a monthly amount that feeds the dashboard. */
 import { useState } from 'react'
 import { EXPENSE_CATEGORIES, FREQUENCIES, monthlyEquivalent, money, totals, useStore, useToast } from '../store.jsx'
 import { Button, Card, DemoTag, EmptyState, Field, Modal, MoneyInput, PageHeader, cx, inputCls } from '../ui.jsx'
@@ -19,7 +20,9 @@ function ExpenseForm({ value, onChange, errors, idPrefix }) {
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       <Field label="Expense name" error={errors.name} id={`${idPrefix}-name`} className="sm:col-span-2">
-        {(p) => <input {...p} className={inputCls} value={value.name} onChange={set('name')} maxLength={80} placeholder="e.g. Grocery delivery" />}
+        {(p) => (
+          <input {...p} className={inputCls} value={value.name} onChange={set('name')} maxLength={80} placeholder="e.g. Grocery delivery" />
+        )}
       </Field>
       <Field label="Amount" error={errors.amount} id={`${idPrefix}-amt`}>
         {(p) => <MoneyInput {...p} value={value.amount} onChange={set('amount')} />}
@@ -82,7 +85,10 @@ export default function Expenses() {
     toast('Expense deleted.', { action: { label: 'Undo', onClick: () => dispatch({ type: 'expense-restore', expense: exp, index }) } })
   }
 
-  const byCat = EXPENSE_CATEGORIES.map((c) => ({ c, total: state.expenses.filter((e) => e.category === c).reduce((s, e) => s + monthlyEquivalent(e.amount, e.frequency), 0) })).filter((x) => x.total > 0)
+  const byCat = EXPENSE_CATEGORIES.map((c) => ({
+    c,
+    total: state.expenses.filter((e) => e.category === c).reduce((s, e) => s + monthlyEquivalent(e.amount, e.frequency), 0),
+  })).filter((x) => x.total > 0)
 
   return (
     <div className="animate-fade-in">
@@ -102,7 +108,8 @@ export default function Expenses() {
               </div>
               {budget > 0 && (
                 <p className={cx('text-sm font-semibold', budget - monthlySpending < 0 ? 'text-red-700' : 'text-brand-800')}>
-                  {budget - monthlySpending < 0 ? `${money(monthlySpending - budget)} over` : `${money(budget - monthlySpending)} under`} your {money(budget)} budget
+                  {budget - monthlySpending < 0 ? `${money(monthlySpending - budget)} over` : `${money(budget - monthlySpending)} under`}{' '}
+                  your {money(budget)} budget
                 </p>
               )}
             </div>
@@ -110,13 +117,41 @@ export default function Expenses() {
               <div className="mt-4">
                 <div className="flex h-3 overflow-hidden rounded-full bg-silver-100" aria-hidden="true">
                   {byCat.map((x, i) => (
-                    <div key={x.c} style={{ width: `${(x.total / monthlySpending) * 100}%` }} className={['bg-brand-700', 'bg-brand-500', 'bg-brand-200', 'bg-amber-400', 'bg-violet-400', 'bg-emerald-400', 'bg-silver-300'][i % 7]} />
+                    <div
+                      key={x.c}
+                      style={{ width: `${(x.total / monthlySpending) * 100}%` }}
+                      className={
+                        [
+                          'bg-brand-700',
+                          'bg-brand-500',
+                          'bg-brand-200',
+                          'bg-amber-400',
+                          'bg-violet-400',
+                          'bg-emerald-400',
+                          'bg-silver-300',
+                        ][i % 7]
+                      }
+                    />
                   ))}
                 </div>
                 <ul className="mt-3 grid gap-1 text-sm sm:grid-cols-2">
                   {byCat.map((x, i) => (
                     <li key={x.c} className="flex items-center gap-2">
-                      <span className={cx('h-3 w-3 rounded-sm', ['bg-brand-700', 'bg-brand-500', 'bg-brand-200', 'bg-amber-400', 'bg-violet-400', 'bg-emerald-400', 'bg-silver-300'][i % 7])} aria-hidden="true" />
+                      <span
+                        className={cx(
+                          'h-3 w-3 rounded-sm',
+                          [
+                            'bg-brand-700',
+                            'bg-brand-500',
+                            'bg-brand-200',
+                            'bg-amber-400',
+                            'bg-violet-400',
+                            'bg-emerald-400',
+                            'bg-silver-300',
+                          ][i % 7]
+                        )}
+                        aria-hidden="true"
+                      />
                       <span className="flex-1">{x.c}</span>
                       <span className="font-semibold">{money(x.total)}/mo</span>
                     </li>
@@ -160,7 +195,13 @@ export default function Expenses() {
                           >
                             Edit
                           </Button>
-                          <Button variant="ghost" size="sm" className="text-red-700 hover:bg-red-50" onClick={() => remove(e)} aria-label={`Delete ${e.name}`}>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-red-700 hover:bg-red-50"
+                            onClick={() => remove(e)}
+                            aria-label={`Delete ${e.name}`}
+                          >
                             Delete
                           </Button>
                         </div>
@@ -171,7 +212,9 @@ export default function Expenses() {
               })}
             </ul>
           )}
-          {state.mode === 'demo' && state.expenses.length > 0 && <p className="text-sm text-muted">Demo expenses are fictional examples, not typical costs.</p>}
+          {state.mode === 'demo' && state.expenses.length > 0 && (
+            <p className="text-sm text-muted">Demo expenses are fictional examples, not typical costs.</p>
+          )}
         </div>
 
         <Card className="h-fit p-5 lg:sticky lg:top-32">

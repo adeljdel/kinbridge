@@ -1,3 +1,4 @@
+/** Larger shared components: location picker, Plus paywall card, footer and the consent dialog. */
 import { useEffect, useState } from 'react'
 import { LOCATIONS, cityByName, cityList, lookupZip } from './data.js'
 import { Button, Card, Field, Modal, inputCls } from './ui.jsx'
@@ -52,7 +53,18 @@ export function LocationPicker({ value, onChange }) {
           )}
         </Field>
         <Field label="ZIP code">
-          {(p) => <input {...p} className={inputCls} inputMode="numeric" autoComplete="off" maxLength={5} value={zip} onChange={(e) => onZip(e.target.value)} placeholder="e.g. 78704" />}
+          {(p) => (
+            <input
+              {...p}
+              className={inputCls}
+              inputMode="numeric"
+              autoComplete="off"
+              maxLength={5}
+              value={zip}
+              onChange={(e) => onZip(e.target.value)}
+              placeholder="e.g. 78704"
+            />
+          )}
         </Field>
       </div>
       {note && (
@@ -86,7 +98,10 @@ export function PlusGate({ title, icon = '🔒', children, bullets = [] }) {
         </ul>
       )}
       <div className="mt-6 flex flex-col justify-center gap-2 sm:flex-row">
-        <a href="#/pricing" className="inline-flex min-h-12 items-center justify-center rounded-xl bg-brand-700 px-5 font-semibold text-white hover:bg-brand-800">
+        <a
+          href="#/pricing"
+          className="inline-flex min-h-12 items-center justify-center rounded-xl bg-brand-700 px-5 font-semibold text-white hover:bg-brand-800"
+        >
           See Plus plans
         </a>
       </div>
@@ -116,9 +131,10 @@ export function SiteFooter() {
           </a>
         </nav>
         <p>
-          KinBridge is an administrative and care-coordination tool. It does not diagnose, recommend treatment, determine benefit eligibility, or replace a clinician, pharmacist, insurer,
-          attorney, or qualified benefits counselor. Data stays in this browser only. KinBridge is not HIPAA compliant and does not claim to be. This is a hackathon prototype; all
-          sample names, pharmacies, prices and statuses are fictional.
+          KinBridge is an administrative and care-coordination tool. It does not diagnose, recommend treatment, determine benefit
+          eligibility, or replace a clinician, pharmacist, insurer, attorney, or qualified benefits counselor. Data stays in this browser
+          only. KinBridge is not HIPAA compliant and does not claim to be. This is a hackathon prototype; all sample names, pharmacies,
+          prices and statuses are fictional.
         </p>
       </div>
     </footer>
@@ -144,7 +160,8 @@ export function ConsentModal({ open, onAllow, onDecline, onClose }) {
       <p>KinBridge can remember what you enter so it’s still here when you come back.</p>
       <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm">
         <li>
-          If you <strong>allow</strong>, your entries are saved in <strong>this browser only</strong> (local storage). They are never uploaded, sold, or shared.
+          If you <strong>allow</strong>, your entries are saved in <strong>this browser only</strong> (local storage). They are never
+          uploaded, sold, or shared.
         </li>
         <li>
           If you <strong>continue without saving</strong>, nothing is stored. Refreshing the page starts over.
@@ -153,7 +170,11 @@ export function ConsentModal({ open, onAllow, onDecline, onClose }) {
         <li>Please don’t enter Social Security numbers, Medicare numbers, birth dates, or medical records.</li>
       </ul>
       <p className="mt-3 text-sm text-muted">
-        Read the full <a href="#/privacy" className="font-semibold text-brand-700 underline" onClick={onClose}>privacy policy</a>.
+        Read the full{' '}
+        <a href="#/privacy" className="font-semibold text-brand-700 underline" onClick={onClose}>
+          privacy policy
+        </a>
+        .
       </p>
     </Modal>
   )

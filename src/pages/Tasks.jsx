@@ -1,3 +1,4 @@
+/** Follow-up task list, add-task dialog and .ics calendar export (shown on the home page). */
 import { useState } from 'react'
 import { fmtDate, todayIso, useStore, useToast } from '../store.jsx'
 import { Button, EmptyState, Field, Modal, cx, inputCls } from '../ui.jsx'
@@ -14,7 +15,17 @@ export function downloadIcs(tasks, filename = 'kinbridge-tasks.ics') {
   const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+/, '')
   const events = tasks
     .filter((t) => t.due)
-    .map((t) => ['BEGIN:VEVENT', `UID:${t.id}@kinbridge.local`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${ymd(t.due)}`, `DTEND;VALUE=DATE:${nextDay(t.due)}`, `SUMMARY:${esc(t.title)}`, 'END:VEVENT'].join('\r\n'))
+    .map((t) =>
+      [
+        'BEGIN:VEVENT',
+        `UID:${t.id}@kinbridge.local`,
+        `DTSTAMP:${stamp}`,
+        `DTSTART;VALUE=DATE:${ymd(t.due)}`,
+        `DTEND;VALUE=DATE:${nextDay(t.due)}`,
+        `SUMMARY:${esc(t.title)}`,
+        'END:VEVENT',
+      ].join('\r\n')
+    )
   const body = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//KinBridge//Prototype//EN', ...events, 'END:VCALENDAR'].join('\r\n')
   const url = URL.createObjectURL(new Blob([body], { type: 'text/calendar' }))
   const a = document.createElement('a')
@@ -76,7 +87,9 @@ export function AddTaskModal({ open, onClose, initialTitle = '' }) {
             />
           )}
         </Field>
-        <Field label="Due date (optional)">{(p) => <input {...p} type="date" className={inputCls} value={due} onChange={(e) => setDue(e.target.value)} />}</Field>
+        <Field label="Due date (optional)">
+          {(p) => <input {...p} type="date" className={inputCls} value={due} onChange={(e) => setDue(e.target.value)} />}
+        </Field>
       </form>
     </Modal>
   )
@@ -108,14 +121,31 @@ export function TaskList({ compact, calendar }) {
           onClick={() => toggle(t)}
           className="flex min-h-11 min-w-11 items-center justify-center rounded-lg hover:bg-brand-50"
         >
-          <span className={cx('flex h-6 w-6 items-center justify-center rounded-md border-2 text-sm font-bold', t.done ? 'border-brand-700 bg-brand-700 text-white' : 'border-silver-300')}>{t.done ? '✓' : ''}</span>
+          <span
+            className={cx(
+              'flex h-6 w-6 items-center justify-center rounded-md border-2 text-sm font-bold',
+              t.done ? 'border-brand-700 bg-brand-700 text-white' : 'border-silver-300'
+            )}
+          >
+            {t.done ? '✓' : ''}
+          </span>
         </button>
         <div className="min-w-0 flex-1 py-1">
           <p className={cx('font-medium break-words', t.done && 'text-muted line-through')}>{t.title}</p>
-          {t.due && <p className={cx('text-sm', overdue ? 'font-semibold text-red-700' : 'text-muted')}>{overdue ? `Overdue · was due ${fmtDate(t.due)}` : `Due ${fmtDate(t.due)}`}</p>}
+          {t.due && (
+            <p className={cx('text-sm', overdue ? 'font-semibold text-red-700' : 'text-muted')}>
+              {overdue ? `Overdue · was due ${fmtDate(t.due)}` : `Due ${fmtDate(t.due)}`}
+            </p>
+          )}
         </div>
         {calendar && t.due && (
-          <button type="button" onClick={() => downloadIcs([t], 'kinbridge-task.ics')} className="min-h-11 min-w-11 rounded-lg text-muted hover:bg-brand-50" aria-label={`Add “${t.title}” to my calendar`} title="Add to calendar (.ics)">
+          <button
+            type="button"
+            onClick={() => downloadIcs([t], 'kinbridge-task.ics')}
+            className="min-h-11 min-w-11 rounded-lg text-muted hover:bg-brand-50"
+            aria-label={`Add “${t.title}” to my calendar`}
+            title="Add to calendar (.ics)"
+          >
             📅
           </button>
         )}

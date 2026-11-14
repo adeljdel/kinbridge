@@ -1,3 +1,7 @@
+/**
+ * App state. One reducer holds everything the user entered; it is saved to localStorage
+ * only after the user gives consent (see ConsentModal). No data ever leaves the browser.
+ */
 import { createContext, useCallback, useContext, useEffect, useReducer, useRef, useState } from 'react'
 import { DEFAULT_LOC } from './data.js'
 import { monthKey, uid } from './calc.js'
@@ -38,8 +42,20 @@ export function makeDemoState() {
       { id: 'exp-3', name: 'Medical alert pendant subscription', category: 'Safety & equipment', amount: 39, frequency: 'monthly' },
     ],
     tasks: [
-      { id: 'task-1', title: 'Ask the pharmacy for a written price on the monthly refills', due: isoInDays(2), done: false, createdAt: Date.now() - 86400000 },
-      { id: 'task-2', title: 'Ask Mom’s long-term care insurer what home-care paperwork they need', due: isoInDays(5), done: false, createdAt: Date.now() - 3600000 },
+      {
+        id: 'task-1',
+        title: 'Ask the pharmacy for a written price on the monthly refills',
+        due: isoInDays(2),
+        done: false,
+        createdAt: Date.now() - 86400000,
+      },
+      {
+        id: 'task-2',
+        title: 'Ask Mom’s long-term care insurer what home-care paperwork they need',
+        due: isoInDays(5),
+        done: false,
+        createdAt: Date.now() - 3600000,
+      },
     ],
     planner: {
       hoursPerWeek: 16,
@@ -83,7 +99,13 @@ export function makeBlankState() {
     profile: { caregiverName: '', caregiverAge: '', parentName: '', ...DEFAULT_LOC, careHoursPerWeek: 0, monthlyBudget: 0 },
     expenses: [],
     tasks: [],
-    planner: { hoursPerWeek: 10, visitsPerWeek: 3, optionA: { label: 'Option A', rate: 0, minHours: 0 }, optionB: { label: 'Option B', rate: 0, minHours: 0 }, includeOtherExpenses: true },
+    planner: {
+      hoursPerWeek: 10,
+      visitsPerWeek: 3,
+      optionA: { label: 'Option A', rate: 0, minHours: 0 },
+      optionB: { label: 'Option B', rate: 0, minHours: 0 },
+      includeOtherExpenses: true,
+    },
     pharmacy: { budget: 0, maxMiles: 10, meds: [], quotes: {}, custom: [] },
     split: { month: monthKey(0), people: [{ id: uid(), name: '', pct: 100, paid: 0 }] },
     checkins: {},
@@ -115,7 +137,10 @@ function reducer(state, a) {
     case 'task-add':
       return { ...state, tasks: [{ id: uid(), done: false, createdAt: Date.now(), ...a.task }, ...state.tasks] }
     case 'task-toggle':
-      return { ...state, tasks: state.tasks.map((t) => (t.id === a.id ? { ...t, done: !t.done, completedAt: !t.done ? Date.now() : null } : t)) }
+      return {
+        ...state,
+        tasks: state.tasks.map((t) => (t.id === a.id ? { ...t, done: !t.done, completedAt: !t.done ? Date.now() : null } : t)),
+      }
     case 'task-delete':
       return { ...state, tasks: state.tasks.filter((t) => t.id !== a.id) }
     case 'planner':
@@ -171,7 +196,8 @@ function loadInitial() {
     const raw = read(KEY)
     if (!raw) return { state: null, consent, error: null }
     const p = JSON.parse(raw)
-    if (!p || p.version !== SCHEMA_VERSION || !Array.isArray(p.expenses) || !Array.isArray(p.tasks)) return { state: null, consent, error: null }
+    if (!p || p.version !== SCHEMA_VERSION || !Array.isArray(p.expenses) || !Array.isArray(p.tasks))
+      return { state: null, consent, error: null }
     const base = p.mode === 'demo' ? makeDemoState() : makeBlankState()
     return {
       consent,
@@ -181,8 +207,19 @@ function loadInitial() {
         ...p,
         plan: { ...FREE_PLAN, ...p.plan },
         profile: { ...base.profile, ...p.profile },
-        planner: { ...base.planner, ...p.planner, optionA: { ...base.planner.optionA, ...p.planner?.optionA }, optionB: { ...base.planner.optionB, ...p.planner?.optionB } },
-        pharmacy: { ...base.pharmacy, ...p.pharmacy, quotes: p.pharmacy?.quotes || {}, custom: p.pharmacy?.custom || [], meds: p.pharmacy?.meds || [] },
+        planner: {
+          ...base.planner,
+          ...p.planner,
+          optionA: { ...base.planner.optionA, ...p.planner?.optionA },
+          optionB: { ...base.planner.optionB, ...p.planner?.optionB },
+        },
+        pharmacy: {
+          ...base.pharmacy,
+          ...p.pharmacy,
+          quotes: p.pharmacy?.quotes || {},
+          custom: p.pharmacy?.custom || [],
+          meds: p.pharmacy?.meds || [],
+        },
         split: { ...base.split, ...p.split, people: p.split?.people?.length ? p.split.people : base.split.people },
         checkins: p.checkins || {},
         support: { tickets: p.support?.tickets || [] },
@@ -233,7 +270,9 @@ export function StoreProvider({ children }) {
   const isPlus = state?.plan?.tier === 'plus'
 
   return (
-    <StoreContext.Provider value={{ state, dispatch, consent, setConsent, isPlus, storageWarning, dismissStorageWarning: () => setStorageWarning(null) }}>
+    <StoreContext.Provider
+      value={{ state, dispatch, consent, setConsent, isPlus, storageWarning, dismissStorageWarning: () => setStorageWarning(null) }}
+    >
       <ToastContext.Provider value={{ toast, toasts, dismissToast }}>{children}</ToastContext.Provider>
     </StoreContext.Provider>
   )

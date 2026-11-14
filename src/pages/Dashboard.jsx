@@ -1,3 +1,4 @@
+/** Home page: clickable summary cards, follow-up tasks, pharmacy pick and setup progress. */
 import { useState } from 'react'
 import { checkinStreak, money, monthKey, monthLabel, pharmacyResults, totals, useStore, useToast } from '../store.jsx'
 import { locLabel } from '../data.js'
@@ -28,7 +29,8 @@ function ProfileModal({ open, onClose }) {
     const hrs = Number(form.careHoursPerWeek)
     if (!Number.isFinite(hrs) || hrs < 0 || hrs > 168) errs.careHoursPerWeek = 'Enter between 0 and 168 hours.'
     const age = form.caregiverAge === '' ? '' : Number(form.caregiverAge)
-    if (age !== '' && (!Number.isFinite(age) || age < 18 || age > 110)) errs.caregiverAge = 'Enter an age between 18 and 110, or leave blank.'
+    if (age !== '' && (!Number.isFinite(age) || age < 18 || age > 110))
+      errs.caregiverAge = 'Enter an age between 18 and 110, or leave blank.'
     setErrors(errs)
     if (Object.keys(errs).length) return
     dispatch({ type: 'profile', patch: { ...form, monthlyBudget: budget, careHoursPerWeek: hrs, caregiverAge: age } })
@@ -54,15 +56,36 @@ function ProfileModal({ open, onClose }) {
     >
       <form id="profile-form" onSubmit={save} className="space-y-4" noValidate>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Your first name">{(p) => <input {...p} className={inputCls} value={form.caregiverName} onChange={set('caregiverName')} maxLength={40} />}</Field>
+          <Field label="Your first name">
+            {(p) => <input {...p} className={inputCls} value={form.caregiverName} onChange={set('caregiverName')} maxLength={40} />}
+          </Field>
           <Field label="Your age (optional)" error={errors.caregiverAge}>
-            {(p) => <input {...p} type="number" inputMode="numeric" className={inputCls} value={form.caregiverAge} onChange={set('caregiverAge')} />}
+            {(p) => (
+              <input
+                {...p}
+                type="number"
+                inputMode="numeric"
+                className={inputCls}
+                value={form.caregiverAge}
+                onChange={set('caregiverAge')}
+              />
+            )}
           </Field>
           <Field label="Parent’s first name or nickname" hint="No last names needed.">
             {(p) => <input {...p} className={inputCls} value={form.parentName} onChange={set('parentName')} maxLength={40} />}
           </Field>
           <Field label="Care hours needed per week" error={errors.careHoursPerWeek}>
-            {(p) => <input {...p} type="number" inputMode="decimal" min="0" className={inputCls} value={form.careHoursPerWeek} onChange={set('careHoursPerWeek')} />}
+            {(p) => (
+              <input
+                {...p}
+                type="number"
+                inputMode="decimal"
+                min="0"
+                className={inputCls}
+                value={form.careHoursPerWeek}
+                onChange={set('careHoursPerWeek')}
+              />
+            )}
           </Field>
           <Field label="Monthly family care budget" error={errors.monthlyBudget} className="sm:col-span-2">
             {(p) => <MoneyInput {...p} value={form.monthlyBudget} onChange={set('monthlyBudget')} />}
@@ -73,7 +96,9 @@ function ProfileModal({ open, onClose }) {
           <LocationPicker value={form} onChange={(loc) => setForm((f) => ({ ...f, ...loc }))} />
         </div>
       </form>
-      <p className="mt-4 text-sm text-muted">We never ask for Social Security numbers, Medicare numbers, birth dates, or medical records.</p>
+      <p className="mt-4 text-sm text-muted">
+        We never ask for Social Security numbers, Medicare numbers, birth dates, or medical records.
+      </p>
     </Modal>
   )
 }
@@ -142,11 +167,36 @@ export default function Dashboard() {
       />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard href="#/expenses" label="Estimated monthly care spending" value={money(monthlySpending)} sub={`From ${state.expenses.length} recurring expense${state.expenses.length === 1 ? '' : 's'} · View`} />
-        <StatCard href="#/planner" label="Planned budget remaining" value={`${over ? '−' : ''}${money(Math.abs(remaining))}`} tone={over ? 'danger' : 'good'} sub={budget > 0 ? `${over ? 'Over' : `${Math.round(pct)}% used of`} your ${money(budget)} budget · Open planner` : 'Set a budget · Open planner'}>
+        <StatCard
+          href="#/expenses"
+          label="Estimated monthly care spending"
+          value={money(monthlySpending)}
+          sub={`From ${state.expenses.length} recurring expense${state.expenses.length === 1 ? '' : 's'} · View`}
+        />
+        <StatCard
+          href="#/planner"
+          label="Planned budget remaining"
+          value={`${over ? '−' : ''}${money(Math.abs(remaining))}`}
+          tone={over ? 'danger' : 'good'}
+          sub={
+            budget > 0
+              ? `${over ? 'Over' : `${Math.round(pct)}% used of`} your ${money(budget)} budget · Open planner`
+              : 'Set a budget · Open planner'
+          }
+        >
           {budget > 0 && (
-            <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-silver-100" role="progressbar" aria-valuenow={Math.round(pct)} aria-valuemin={0} aria-valuemax={100} aria-label="Share of budget used">
-              <div className={cx('h-full rounded-full', over ? 'bg-red-600' : pct > 85 ? 'bg-amber-500' : 'bg-brand-500')} style={{ width: `${pct}%` }} />
+            <div
+              className="mt-2 h-2.5 overflow-hidden rounded-full bg-silver-100"
+              role="progressbar"
+              aria-valuenow={Math.round(pct)}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label="Share of budget used"
+            >
+              <div
+                className={cx('h-full rounded-full', over ? 'bg-red-600' : pct > 85 ? 'bg-amber-500' : 'bg-brand-500')}
+                style={{ width: `${pct}%` }}
+              />
             </div>
           )}
         </StatCard>
@@ -162,7 +212,12 @@ export default function Dashboard() {
           value={openTasks}
           sub={`${state.tasks.length - openTasks} completed · Jump to tasks`}
         />
-        <StatCard href="#/checkin" label="Monthly check-in" value={checked ? 'Done ✓' : 'Due'} sub={checked ? `${streak}-month streak · View` : `${monthLabel(thisMonth)} · Log it`} />
+        <StatCard
+          href="#/checkin"
+          label="Monthly check-in"
+          value={checked ? 'Done ✓' : 'Due'}
+          sub={checked ? `${streak}-month streak · View` : `${monthLabel(thisMonth)} · Log it`}
+        />
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1.3fr_1fr]">
@@ -186,15 +241,19 @@ export default function Dashboard() {
                 <p>
                   {ph.best ? (
                     <>
-                      <strong>{pick.name}</strong> fits your {money(ph.budget)}/month pharmacy budget at about <strong>{money(pick.price)}</strong> ({pick.distance} mi, {pick.source}).
+                      <strong>{pick.name}</strong> fits your {money(ph.budget)}/month pharmacy budget at about{' '}
+                      <strong>{money(pick.price)}</strong> ({pick.distance} mi, {pick.source}).
                     </>
                   ) : (
                     <>
-                      No listed pharmacy fits your {money(ph.budget)} budget. Lowest is <strong>{pick.name}</strong> at about <strong>{money(pick.price)}</strong> ({money(ph.gap)} over).
+                      No listed pharmacy fits your {money(ph.budget)} budget. Lowest is <strong>{pick.name}</strong> at about{' '}
+                      <strong>{money(pick.price)}</strong> ({money(ph.gap)} over).
                     </>
                   )}
                 </p>
-                <p className="mt-2 text-sm text-muted">Estimates only{state.mode === 'demo' ? ' — fictional pharmacies' : ''}. Confirm prices with the pharmacy.</p>
+                <p className="mt-2 text-sm text-muted">
+                  Estimates only{state.mode === 'demo' ? ' — fictional pharmacies' : ''}. Confirm prices with the pharmacy.
+                </p>
               </>
             )}
           </Card>
@@ -211,8 +270,19 @@ export default function Dashboard() {
             <ul className="space-y-1.5">
               {steps.map((s) => (
                 <li key={s.label}>
-                  <a href={s.href} onClick={s.onClick} className="flex min-h-12 items-center gap-3 rounded-xl border border-silver-200 px-3 hover:bg-brand-50">
-                    <span className={cx('flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 text-xs font-bold', s.done ? 'border-brand-700 bg-brand-700 text-white' : 'border-silver-300')}>{s.done ? '✓' : ''}</span>
+                  <a
+                    href={s.href}
+                    onClick={s.onClick}
+                    className="flex min-h-12 items-center gap-3 rounded-xl border border-silver-200 px-3 hover:bg-brand-50"
+                  >
+                    <span
+                      className={cx(
+                        'flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 text-xs font-bold',
+                        s.done ? 'border-brand-700 bg-brand-700 text-white' : 'border-silver-300'
+                      )}
+                    >
+                      {s.done ? '✓' : ''}
+                    </span>
                     <span className={cx('text-sm font-medium', s.done && 'text-muted')}>{s.label}</span>
                   </a>
                 </li>
@@ -229,14 +299,21 @@ export default function Dashboard() {
                 ['#/summary', '🖨️', 'Printable summary'],
                 ['#/support', '💬', 'Get help'],
               ].map(([h, i, l]) => (
-                <a key={h} href={h} className="flex min-h-14 items-center gap-2 rounded-xl border border-silver-200 px-3 text-sm font-semibold hover:bg-brand-50">
+                <a
+                  key={h}
+                  href={h}
+                  className="flex min-h-14 items-center gap-2 rounded-xl border border-silver-200 px-3 text-sm font-semibold hover:bg-brand-50"
+                >
                   <span aria-hidden="true">{i}</span>
                   {l}
                 </a>
               ))}
             </div>
             {!isPlus && (
-              <a href="#/pricing" className="mt-3 flex min-h-12 items-center justify-center rounded-xl bg-accent-100 px-3 text-sm font-bold text-accent-600 hover:bg-amber-100">
+              <a
+                href="#/pricing"
+                className="mt-3 flex min-h-12 items-center justify-center rounded-xl bg-accent-100 px-3 text-sm font-bold text-accent-600 hover:bg-amber-100"
+              >
                 ⭐ Unlock Plus — from $6.58/mo billed yearly
               </a>
             )}
