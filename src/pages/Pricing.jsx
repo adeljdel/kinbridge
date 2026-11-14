@@ -166,14 +166,13 @@ export default function Pricing({ onStart }) {
         <ul className="mt-2 list-disc space-y-1.5 pl-5 text-sm text-muted">
           <li>
             Our users are working adults (25–45) paying for a parent’s care out of their own pocket, so we price like a personal-finance
-            app, not an enterprise tool. Budgeting apps commonly run about $5–$15 per month.
+            app, not an enterprise tool.
           </li>
           <li>Families pay for Plus, not care providers, so KinBridge stays on the family’s side.</li>
           <li>
             The yearly plan costs {yearlySavingsPct}% less per month because caregiving is a long-term job; a year of check-ins is where the
             value builds.
           </li>
-          <li>These are placeholder prices for the prototype and will be tested with real caregivers.</li>
         </ul>
       </Card>
 

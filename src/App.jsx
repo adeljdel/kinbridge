@@ -195,7 +195,7 @@ export default function App() {
           <div className="border-t border-violet-200 bg-violet-50 text-violet-900">
             <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2 text-sm">
               <span className="font-bold">🧪 This is demo data.</span>
-              <span>All names, pharmacies, prices, expenses, and statuses are fictional. Nothing has been verified.</span>
+              <span>Fictional examples: enter your own numbers to replace them.</span>
             </div>
           </div>
         )}

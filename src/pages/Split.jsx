@@ -24,7 +24,7 @@ export default function Split() {
             'Printable family summary to share',
           ]}
         >
-          Money is the number-one source of sibling friction in caregiving. Plus turns it into a simple monthly routine.
+          Money is a common source of sibling friction in caregiving. Plus turns it into a simple monthly routine.
         </PlusGate>
       </div>
     )
