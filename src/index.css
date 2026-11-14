@@ -1,0 +1,45 @@
+@import "@fontsource-variable/nunito";
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Nunito Variable", "Nunito", ui-rounded, "SF Pro Rounded", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  /* KinBridge palette: sage #708A81, orange #DD8E58, cream #E5D1B8, tan #C2956E, plum #2B2129 */
+  --color-brand-50: #f1f4f2;
+  --color-brand-100: #dce6e2;
+  --color-brand-200: #b8cbc4;
+  --color-brand-500: #708a81;
+  --color-brand-600: #5c776d;
+  --color-brand-700: #4b665c;
+  --color-brand-800: #3a5148;
+  --color-brand-900: #2b2129;
+  --color-silver-50: #f8f3ea;
+  --color-silver-100: #f0e7d8;
+  --color-silver-200: #e3d5bf;
+  --color-silver-300: #bfa98b;
+  --color-ink: #2b2129;
+  --color-muted: #5f5359;
+  --color-accent-100: #fbead9;
+  --color-accent-600: #a3581f;
+  --color-kin: #b8622a;
+  --color-orange-brand: #dd8e58;
+  --color-tan: #c2956e;
+}
+
+html { -webkit-text-size-adjust: 100%; }
+body { background: var(--color-silver-50); color: var(--color-ink); }
+
+:focus-visible { outline: 3px solid var(--color-brand-500); outline-offset: 2px; border-radius: 6px; }
+
+input, select, textarea { font-size: 16px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+@keyframes fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.animate-fade-in { animation: fade-in .2s ease-out; }
+
+@media print {
+  .no-print { display: none !important; }
+  body { background: white; }
+}
